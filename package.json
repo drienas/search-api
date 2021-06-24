@@ -10,7 +10,7 @@
     "morgan": "^1.10.0"
   },
   "name": "search-api",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "directories": {
     "lib": "lib"

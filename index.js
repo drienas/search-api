@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const AUTH_SERVER = process.env.AUTH_SERVER || null;
+const auth = require('./auth');
 
 const qex = require('./lib/QueryExecutors');
 const System = require('./System');
@@ -24,7 +25,7 @@ const filter = qex.filterQuery;
 const run = qex.fullTextQuery;
 const read = qex.indexQuery;
 
-app.get('/definitions/wib/:id', async (req, res) => {
+app.get('/definitions/wib/:id', auth, async (req, res) => {
   try {
     let data = await System.getDropdownKVbyID(req.params.id);
     res.json(data);
@@ -33,7 +34,7 @@ app.get('/definitions/wib/:id', async (req, res) => {
   }
 });
 
-app.get('/api/:version/:idx/index/:id', (req, res) => {
+app.get('/api/:version/:idx/index/:id', auth, (req, res) => {
   let id = req.params.id;
   let index = req.params.idx;
   switch (req.params.version) {
@@ -50,7 +51,7 @@ app.get('/api/:version/:idx/index/:id', (req, res) => {
   }
 });
 
-app.post('/api/:version/:idx/filter', (req, res) => {
+app.post('/api/:version/:idx/filter', auth, (req, res) => {
   switch (req.params.version) {
     case 'v1':
       filter(req.body, res);
@@ -64,7 +65,7 @@ app.post('/api/:version/:idx/filter', (req, res) => {
   }
 });
 
-app.get('/api/:version/:idx/full/:query', (req, res) => {
+app.get('/api/:version/:idx/full/:query', auth, (req, res) => {
   switch (req.params.version) {
     case 'v1':
       run(req.params.query, res);
@@ -79,7 +80,7 @@ app.get('/api/:version/:idx/full/:query', (req, res) => {
   }
 });
 
-app.post('/api/:version/:idx/full', (req, res) => {
+app.post('/api/:version/:idx/full', auth, (req, res) => {
   switch (req.params.version) {
     case 'v1':
       res.status(405).send('');

@@ -148,6 +148,93 @@ app.get('/auth/validate/:token', async (req, res) => {
   }
 });
 
+app.post('/seax/reserve', auth, async (req, res) => {
+  let body = req.body;
+  console.log(body);
+  if (!global.rmqChannel) {
+    console.log(`No RMQ CHANNEL`);
+    res.status(500).json({
+      success: false,
+      error: `Keine Verbindung zum Reservierungsserver!`,
+    });
+    return;
+  }
+  try {
+    await global.rmqChannel.publish(
+      'search_x',
+      'reservation.set',
+      Buffer.from(JSON.stringify({ ...body }))
+    );
+    res.status(200).json({ success: true });
+    return;
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      error: `Keine Verbindung zum Reservierungsserver! - ${error}`,
+    });
+    return;
+  }
+});
+
+app.post('/seax/cancelreservation', auth, async (req, res) => {
+  let body = req.body;
+  console.log(body);
+  if (!global.rmqChannel) {
+    console.log(`No RMQ CHANNEL`);
+    res.status(500).json({
+      success: false,
+      error: `Keine Verbindung zum Reservierungsserver!`,
+    });
+    return;
+  }
+  try {
+    await global.rmqChannel.publish(
+      'search_x',
+      'reservation.delete',
+      Buffer.from(JSON.stringify({ ...body }))
+    );
+    res.status(200).json({ success: true });
+    return;
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      error: `Keine Verbindung zum Reservierungsserver! - ${error}`,
+    });
+    return;
+  }
+});
+
+app.post('/seax/comment', auth, async (req, res) => {
+  let body = req.body;
+  console.log(body);
+  if (!global.rmqChannel) {
+    console.log(`No RMQ CHANNEL`);
+    res.status(500).json({
+      success: false,
+      error: `Keine Verbindung zum Reservierungsserver!`,
+    });
+    return;
+  }
+  try {
+    await global.rmqChannel.publish(
+      'search_x',
+      'reservation.comment',
+      Buffer.from(JSON.stringify({ ...body }))
+    );
+    res.status(200).json({ success: true });
+    return;
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      error: `Keine Verbindung zum Reservierungsserver! - ${error}`,
+    });
+    return;
+  }
+});
+
 (async () => {
   System.ready(() => {
     app.listen(3333, () => console.log(`Listening on port 3333`));

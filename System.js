@@ -68,7 +68,7 @@ const getDropdownKVbyID = async (attrId) => {
   return arr;
 };
 
-const ready = (cb) => {
+const ready = async (cb) => {
   mongoose.connection.on('connected', async (err) => {
     console.log(`Connected to MongoDB`);
     Attributes = mongoose.model('Attribute', attributSchema);
@@ -79,6 +79,10 @@ const ready = (cb) => {
     for (let d of data) Sys.Attribute = d._doc;
     cb();
   });
+
+  const rmq = require('./RabbitMQ');
+  const connection = await rmq.connect();
+  global.rmqChannel = await rmq.initExchangeChannel(connection, 'search_x');
 };
 module.exports = {
   Attribute: Sys.Attribute,
